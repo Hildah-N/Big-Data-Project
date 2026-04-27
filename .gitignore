@@ -1,0 +1,26 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+
+# Data files (raw large files)
+data/raw/
+
+# Database
+*.db
+
+# Environment
+.env
+
+# OS files
+.DS_Store
+
+# SQLite databases
+*.db
+*.sqlite
+*.sqlite3
+*.db3
+
+# Database journals
+*.db-journal
+*.sqlite-journal
