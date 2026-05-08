@@ -5,7 +5,6 @@ dashboard.py — Global Patent Intelligence Dashboard
 import streamlit as st
 import pandas as pd
 from pathlib import Path
-from sqlalchemy import create_engine
 
 # ── Page config ────────────────────────────────────────────────────────────────
 st.set_page_config(
@@ -279,26 +278,20 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-# ── Paths / DB ────────────────────────────────────────────────────────────────
-DB_PATH = "patent_db"
+# ── Paths ─────────────────────────────────────────────────────────────────────
 OUTPUT  = Path("output")
 CHARTS  = OUTPUT / "charts"
 
-@st.cache_resource
-def get_engine():
-    return create_engine(f"sqlite:///{DB_PATH}", echo=False)
-
-@st.cache_data(ttl=600)
+@st.cache_data
 def load_totals():
-    engine = get_engine()
-    return pd.read_sql("""
-        SELECT
-            (SELECT COUNT(*) FROM patents)                                      AS total_patents,
-            (SELECT COUNT(*) FROM inventors)                                    AS total_inventors,
-            (SELECT COUNT(*) FROM companies)                                    AS total_companies,
-            (SELECT COUNT(*) FROM relationships WHERE inventor_id IS NOT NULL)  AS inv_links,
-            (SELECT COUNT(*) FROM relationships WHERE company_id IS NOT NULL)   AS comp_links
-    """, engine).iloc[0]
+    # Totals pre-computed from clean CSVs — no large files needed at runtime
+    return pd.Series({
+        "total_patents":   9_454_161,
+        "total_inventors": 4_294_034,
+        "total_companies":   516_032,
+        "inv_links":      32_783_976,
+        "comp_links":     32_783_976,
+    })
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 def chart(name, caption=""):
